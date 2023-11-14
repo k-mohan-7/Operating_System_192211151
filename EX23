@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to sort an array in ascending order
+void sort(int arr[], int size) {
+    int temp;
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = 0; j < size - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                // Swap
+                temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Function to find the index of the disk head in the sorted array
+int findHeadIndex(int arr[], int size, int head) {
+    int i;
+    for (i = 0; i < size; i++) {
+        if (arr[i] >= head) {
+            break;
+        }
+    }
+    return i;
+}
+
+// Function to simulate SCAN disk scheduling algorithm
+void scan(int arr[], int size, int head, char direction) {
+    sort(arr, size);
+
+    int headIndex = findHeadIndex(arr, size, head);
+    int totalSeekOperations = 0;
+
+    printf("Seek Sequence: %d ", head);
+
+    if (direction == 'l') {  // Left direction
+        for (int i = headIndex - 1; i >= 0; i--) {
+            printf("-> %d ", arr[i]);
+            totalSeekOperations += abs(head - arr[i]);
+            head = arr[i];
+        }
+
+        printf("-> 0 ");  // Move to the leftmost track
+
+        for (int i = headIndex; i < size; i++) {
+            printf("-> %d ", arr[i]);
+            totalSeekOperations += abs(head - arr[i]);
+            head = arr[i];
+        }
+    } else if (direction == 'r') {  // Right direction
+        for (int i = headIndex; i < size; i++) {
+            printf("-> %d ", arr[i]);
+            totalSeekOperations += abs(head - arr[i]);
+            head = arr[i];
+        }
+
+        printf("-> 199 ");  // Move to the rightmost track
+
+        for (int i = headIndex - 1; i >= 0; i--) {
+            printf("-> %d ", arr[i]);
+            totalSeekOperations += abs(head - arr[i]);
+            head = arr[i];
+        }
+    }
+
+    printf("\nTotal Seek Operations: %d\n", totalSeekOperations);
+}
+
+int main() {
+    int n, head, direction;
+
+    printf("Enter the number of requests: ");
+    scanf("%d", &n);
+
+    int requests[n];
+
+    printf("Enter the requests: ");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &requests[i]);
+    }
+
+    printf("Enter the initial position of the disk head: ");
+    scanf("%d", &head);
+
+    printf("Enter the direction (l for left, r for right): ");
+    scanf(" %c", &direction);
+
+    scan(requests, n, head, direction);
+
+    return 0;
+}
